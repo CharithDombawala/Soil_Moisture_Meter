@@ -1,3 +1,3 @@
 # Soil_moisture_meter
-project of electronic design Realization
-schemetic designs are done by using Easy EDA
+project of electronic design Realization Module. schemetic designs are done by using Easy EDA
+
