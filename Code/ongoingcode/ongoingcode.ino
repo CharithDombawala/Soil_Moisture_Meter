@@ -1,6 +1,7 @@
 #include <Adafruit_GFX.h>
 #include <Wire.h>
 #include <Adafruit_SSD1306.h>
+#include <SPI.h>
 #include <DHTesp.h>
 
 
@@ -9,16 +10,17 @@
 #define  OLED_RESET -1
 #define  SCREEN_ADDRESS 0x3C
 
-#define BUZZER 14
-#define LED_1 19
-#define pb_cancel 3  
-#define pb_ok 2 
-#define pb_down 5 
-#define pb_up 4 
-#define DHTpin 15
-#define moisturesensor 23 
-#define miosturesensordigital  12
-
+#define BUZZER 13//14        // sudu- button 2, kalu button 1,duburu- button 4, rathu, button 3    //  1 - gnd , 2- button 3, 3- button 4, 4- button 1, 5-button 2
+#define LED_1 8//19
+#define pb_cancel 3//3  
+#define pb_ok 2//2 
+#define pb_down 5 //5 
+#define pb_up 4//4 
+#define DHTpin 9 //15
+ 
+//#define miosturesensordigital  //12
+#define moisturesensorPower 7
+#define moisturesensor A0 //23
 
 
 DHTesp dhtsensor;
@@ -26,21 +28,21 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 //Global variable
 
- int days=0;
- int hours=0;
- int minutes=0;
- int seconds=0;
+ int days=1;
+ int hours=22;
+ int minutes=43;
+ int seconds=1;
 
  unsigned long timeNow=0;
  unsigned long timeLast=0;
  
-int moisture[]={0,0} 
-int temperature[]={0,0}
-int humidity[]={0,0}
+int moisture[]={0,0};
+int temperature[]={0,0};
+int humidity[]={0,0};
 
 bool alarm_enabled=true;
-int alarm_hours[]={0};
-int alarm_minutes[]={0};
+int alarm_hours[]={5};
+int alarm_minutes[]={54};
 bool alarm_triggered[]={false};
 
 int BUZZERFrequency = 1000;
@@ -54,14 +56,18 @@ void setup() {
   // put your setup code here, to run once:
 
 
-  //pinMode(BUZZER,OUTPUT);
-  //pinMode(LED_1,OUTPUT);
+  pinMode(BUZZER,OUTPUT);
+  pinMode(LED_1,OUTPUT);
   pinMode(pb_cancel,INPUT_PULLUP);
   pinMode(pb_ok, INPUT_PULLUP);
   pinMode(pb_down, INPUT_PULLUP);
   pinMode(pb_up, INPUT_PULLUP);
   //pinMode(DHTpin, INPUT);
-
+  //pinMode(moisturesensorPower, OUTPUT);
+	//pinMode(moisturesensor, INPUT);
+	// Initially keep the sensor OFF
+	//digitalWrite(moisturesensorPower, LOW);
+  
   //dhtsensor.setup(DHTpin,DHTesp::DHT22);
 
   Serial.begin(115200);
@@ -76,7 +82,7 @@ void setup() {
   delay(2000);
   
   display.clearDisplay();
-  print_text("Welcome",10,28,2);
+  print_text("Welcome",25,28,2);
   delay(2000);
   display.clearDisplay(); 
 
@@ -84,12 +90,17 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  update_time_with_check_alarm();
-if (digitalRead(pb_ok)==LOW){
-     delay(200);
-     go_to_menu();
-}
-    check_sensors();
+   update_time_with_check_alarm();
+//display.clearDisplay(); 
+// print_text("working",20,20,2);
+// if (digitalRead(pb_ok)==LOW){  
+//      delay(200);
+     //go_to_menu();
+  //display.clearDisplay(); 
+ 
+//     //check_sensors();
+    //BlinkLED1();
+   //ring_alarm();
 }
 
 
@@ -134,13 +145,13 @@ void update_time(){
 } 
 
 
-void ring_alarm(string type){
+void ring_alarm(){
   display.clearDisplay();
   
-  print_text(type,0,0,2);
+  print_text("alarm",0,0,2);
   digitalWrite(LED_1, HIGH);
  
-  bool break_happened = false;
+ bool break_happened = false;
  
  while(break_happened == false && digitalRead(pb_cancel) == HIGH){
  
@@ -169,7 +180,7 @@ void update_time_with_check_alarm(){
   if(alarm_enabled){
     
       if(alarm_triggered[0]==false && alarm_hours[0]==hours && alarm_minutes[0]==minutes){
-          ring_alarm("Time to water");
+          ring_alarm();
           alarm_triggered[0]=true;
       }
 
@@ -252,9 +263,9 @@ void run_mode(int current_mode){
     else if(current_mode==4){
       set_alarm();      
     }
-    // else if(current_mode==5){
-    //   set_bluetooth();       
-    // }    
+    else if(current_mode==5){
+       print_text("BluetoothMode",40,40,1);
+    }
 }
 void set_time(){
   int temp_hour=hours;
@@ -357,7 +368,7 @@ void set_alarm(){
 
       else if(pressed==pb_ok){
           delay(200);
-          alarm_hours[alarm]=temp_hour;
+          alarm_hours[0]=temp_hour;
           break;
         }
 
@@ -391,7 +402,7 @@ void set_alarm(){
 
         else if(pressed==pb_ok){
             delay(200);
-            alarm_minutes[alarm]=temp_minute;
+            alarm_minutes[0]=temp_minute;
             break;
           }
 
@@ -425,7 +436,7 @@ void set_moisture(){
 
       else if(pressed==pb_down){
           delay(200);
-          upper_threshold-=1;
+          m_upper_threshold-=1;
           if(m_upper_threshold<0){
             m_upper_threshold=100;
           }
@@ -557,7 +568,7 @@ void set_temp(){
         delay(1500);
 
   }
-void set_humiditiy(){
+void set_humidity(){
     int h_upper_threshold=humidity[0];
     while(true){
       display.clearDisplay();
@@ -631,6 +642,14 @@ void set_humiditiy(){
         delay(1500);
 
   }  
+int readMoistureSensor() {
+	digitalWrite(moisturesensorPower, HIGH);	// Turn the sensor ON
+	delay(10);							// Allow power to settle
+	int val = analogRead(moisturesensor);	// Read the analog value form sensor
+	digitalWrite(moisturesensorPower, LOW);		// Turn the sensor OFF
+	return val;							// Return analog moisture value
+}
+
 void check_sensors(){
   TempAndHumidity data= dhtsensor.getTempAndHumidity();
   if(data.temperature>temperature[0]){
@@ -649,6 +668,42 @@ void check_sensors(){
     display.clearDisplay();
     print_text("Humidity Level Low",50,40,1);
   }
-   // update krnn one 
-//
+  if(readMoistureSensor()>moisture[0]){
+    display.clearDisplay();
+    print_text("Moisture Level High",50,40,1);
+  }
+  else if(readMoistureSensor()<moisture[1]){
+    display.clearDisplay();
+    print_text("Moisture Level Low",50,40,1);
+    ring_alarm();
+  } 
+ print_text("Soil Moisture Level: "+String(readMoistureSensor()),50,10,1);
+ print_text("Temperature: "+String(data.temperature),50,30,1);
+ print_text("Humidity: "+String(data.humidity),50,50,1);
 }
+
+void BlinkLED(){
+ digitalWrite(LED_1, HIGH);
+ delay(1000);
+ 
+ bool break_happened = false;
+ 
+ while(break_happened == false && digitalRead(pb_cancel) == HIGH){
+ 
+    if(digitalRead(pb_cancel)==LOW){
+        delay(200);
+        break_happened=true;
+        break;
+   }
+  update_time();  
+ }
+  digitalWrite(LED_1, LOW);
+  delay(1000);
+}
+void BlinkLED1(){
+  digitalWrite(LED_1, HIGH);
+  delay(1000);
+  digitalWrite(LED_1, LOW);   
+  delay(1000);
+}
+ 
