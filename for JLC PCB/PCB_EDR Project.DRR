@@ -1,0 +1,22 @@
+----------------------------------------------------------------------------------------------------------------------------------
+NCDrill File Report For: PCB_EDR Project.pcbdoc   5/2/2023  10:15:33 PM
+----------------------------------------------------------------------------------------------------------------------------------
+
+Layer Pair : Top Layer to Bottom Layer
+ASCII RoundHoles File : PCB_EDR Project.TXT
+
+Tool       Hole Size               Hole Tolerance               Hole Type       Hole Count   Plated         Tool Travel
+----------------------------------------------------------------------------------------------------------------------------------
+T1      20mil (0.5mm)                                             Round             2         PTH        0.57inch (14.36mm)
+T2      32mil (0.8mm)                                             Round             12        PTH        2.95inch (74.97mm)
+T3      35mil (0.889mm)                                           Round             6         PTH        0.70inch (17.78mm)
+T4      35mil (0.899mm)                                           Round             38        PTH        9.34inch (237.14mm)
+T5      36mil (0.914mm)                                           Round             20        PTH        5.40inch (137.15mm)
+T6      39mil (1.001mm)                                           Round             5         PTH        0.78inch (19.70mm)
+T7      43mil (1.1mm)                                             Round             2         PTH        0.21inch (5.28mm)
+T8      47mil (1.199mm)                                           Round             9         PTH        5.60inch (142.21mm)
+T9      80mil (2.032mm)                                           Round             4         NPTH       7.49inch (190.22mm)
+----------------------------------------------------------------------------------------------------------------------------------
+Totals                                                                              98
+
+Total Processing Time (hh:mm:ss) : 00:00:00

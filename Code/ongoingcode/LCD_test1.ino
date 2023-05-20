@@ -1,31 +1,21 @@
-#include <Adafruit_GFX.h>
 #include <Wire.h>
-#include <Adafruit_SSD1306.h>
-#include <SPI.h>
-//#include <DHTesp.h>
+#include <LiquidCrystal_I2C.h>
 
-
-#define  SCREEN_WIDTH 128
-#define  SCREEN_HEIGHT 64
-#define  OLED_RESET -1
-#define  SCREEN_ADDRESS 0x3C
-
-#define BUZZER 13//14        // sudu- button 2, kalu button 1,duburu- button 4, rathu-button 3    //  1 - gnd , 2- button 3, 3- button 4, 4- button 1, 5-button 2
-#define LED_1 8//19
-#define pb_cancel 3//3  
-#define pb_ok 2//2 
-#define pb_down 5 //5 
-#define pb_up 4//4 
-#define DHTpin 9 //15
+#define BUZZER 8//14        // sudu- button 2, kalu button 1,duburu- button 4, rathu-button 3    //  1 - gnd , 2- button 3, 3- button 4, 4- button 1, 5-button 2
+#define LED_1 13//19
+#define pb_cancel 4//3      
+#define pb_ok 5//2 
+#define pb_down 2//5 
+#define pb_up 3//4 
+//#define DHTpin 9 //15
  
 //#define miosturesensordigital  //12
-#define moisturesensorPower 7
-#define moisturesensor A0 //23
+//#define moisturesensorPower 7
+//#define moisturesensor A0 //23
 
 
 //DHTesp dhtsensor;
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-
+LiquidCrystal_I2C lcd(0x3F,16,2);
 //Global variable
 
 byte days = 1;       // Range: 0-255
@@ -45,12 +35,12 @@ byte alarm_hours[]={5};
 byte alarm_minutes[]={54};
 bool alarm_triggered[]={false};
 
-int BUZZERFrequency = 1000;
-byte BUZZERDuration = 200;
+int BUZZERFrequency = 5000;
+byte BUZZERDuration = 750;
 
 byte current_mode=0;
 byte n_mode=6;
-String modes[]={"1-Set Time","2-Set moisture Threshold","3-Set Temp Threshold","4-Set Humidity Threshold","5-Set Alarm","6-Bluetooth mode"};
+String modes[]={"Set Time","Set moisture","Set Temparature","Set Humidity","Set Alarm","Bluetooth mode"};
 
 void setup() {
   // put your setup code here, to run once:
@@ -69,55 +59,45 @@ void setup() {
 	//digitalWrite(moisturesensorPower, LOW);
   
   //dhtsensor.setup(DHTpin,DHTesp::DHT22);
-
-  Serial.begin(9600);
-
-  //ssd1306_swithhcapvcc = generate display voltage from 3.3v internally
-  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-            Serial.println(F("SSD1306 allocation failed"));
-            for(;;);
-}
-
+  lcd.init();
+  lcd.clear();         
+  lcd.backlight();      // Make sure backlight is on
   
-  delay(2000);
+  // Print a message on both lines of the LCD.
+  lcd.setCursor(5,0);   //Set cursor to character 2 on line 0
+  lcd.print("Welcome");
   
-  display.clearDisplay();
-  print_text(F("Welcome"),25,28,2);
-  delay(2000);
-  display.clearDisplay(); 
  
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-//    update_time_with_check_alarm();
+ // put your main code here, to run repeatedly:
+   update_time_with_check_alarm();
    
    
-// if (digitalRead(pb_ok)==LOW){  
-//      delay(200);
-     //go_to_menu();
-//     display.clearDisplay(); 
-// }
-//     //check_sensors();
+if (digitalRead(pb_ok)==LOW){  
+     delay(200);
+     go_to_menu();
+    lcd.clear();   
+}
+  
      BlinkLED1();
-        
-   //ring_alarm();
+     ring_alarm(); 
+  
   
 
 }
 
 
 void print_text(String text, int column , int row, int text_size){
-  display.setTextSize(text_size);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(column,row);
-  display.println(text);
-  display.display();
+  lcd.clear();  
+  lcd.setCursor(column,row);   //Set cursor to character 2 on line 0
+  lcd.print(text);
 
 }
 
 // void print_time_now(){
-//   display.clearDisplay(); 
+//   lcd.clear();   
 //   print_text(days,0,0,1);
 //   print_text(F(":"),20,0,1);
 //   print_text(hours,30,0,1);
@@ -147,8 +127,8 @@ void update_time(){
 
 
 void ring_alarm(){
-  display.clearDisplay();
   
+  lcd.clear();  
   print_text(F("alarm"),0,0,2);
   digitalWrite(LED_1, HIGH);
  
@@ -170,12 +150,12 @@ void ring_alarm(){
     
  }
   digitalWrite(LED_1, LOW);
-  display.clearDisplay();
+  lcd.clear();  
 
 }
 
 void update_time_with_check_alarm(){
-  display.clearDisplay();   
+  //lcd.clear();     
   update_time();
   //print_time_now();
 
@@ -215,8 +195,11 @@ int wait_for_button_press(){
 
 void go_to_menu(){
   while(digitalRead(pb_cancel)==HIGH){
-    display.clearDisplay();
-    print_text((modes[current_mode]),0,0,2);
+    lcd.clear();  
+    print_text((modes[current_mode]),0,1,2);
+    lcd.setCursor(12,0);   
+    lcd.print("Menu");
+
 
     int pressed=wait_for_button_press();
 
@@ -272,8 +255,8 @@ void run_mode(int current_mode){
 void set_time(){
   int temp_hour=hours;
   while(true){
-    display.clearDisplay();
-    print_text(("Enter hour :"+String(temp_hour)),0,0,2);
+    lcd.clear();  
+    print_text(("Hour :"+String(temp_hour)),0,0,2);
 
     int pressed=wait_for_button_press();
 
@@ -306,8 +289,8 @@ void set_time(){
 
     int temp_minute=minutes;
     while(true){
-      display.clearDisplay();
-      print_text(("Enter minute :"+String(temp_minute)),0,0,1);
+      lcd.clear();  
+      print_text(("Minute :"+String(temp_minute)),0,0,1);
 
       int pressed=wait_for_button_press();
 
@@ -338,7 +321,7 @@ void set_time(){
         update_time();
       }
 
-      display.clearDisplay();
+      lcd.clear();  
       print_text(F("Time is set"),0,0,1);
       delay(1500);
   }
@@ -347,10 +330,11 @@ void set_time(){
 
 
 void set_alarm(){
+    ring_alarm();
     int temp_hour=alarm_hours[0];
     while(true){
-      display.clearDisplay();
-      print_text(("Enter hour :"+String(temp_hour)),0,0,1);
+      lcd.clear();  
+      print_text(("Hour :"+String(temp_hour)),0,0,1);
 
       int pressed=wait_for_button_press();
 
@@ -383,8 +367,8 @@ void set_alarm(){
 
       int temp_minute=alarm_minutes[0];
       while(true){
-        display.clearDisplay();
-        print_text(("Enter minute :"+String(temp_minute)),0,0,1);
+        lcd.clear();  
+        print_text(("Minute :"+String(temp_minute)),0,0,1);
 
         int pressed=wait_for_button_press();
 
@@ -415,7 +399,7 @@ void set_alarm(){
           update_time();
         }
 
-        display.clearDisplay();
+        lcd.clear();  
         print_text(F("Alarm is set"),0,0,1);
         alarm_enabled=true;
         delay(1500);
@@ -425,8 +409,8 @@ void set_alarm(){
 void set_moisture(){
     int m_upper_threshold=moisture[0];
     while(true){
-      display.clearDisplay();
-      print_text(("Enter moisture Upper threshold :"+String(m_upper_threshold)),0,0,1);
+      lcd.clear();  
+      print_text(("Upper Level: "+String(m_upper_threshold)),0,0,1);
 
       int pressed=wait_for_button_press();
 
@@ -459,8 +443,8 @@ void set_moisture(){
 
       int m_lower_threshold=moisture[1];
       while(true){
-        display.clearDisplay();
-        print_text(("Enter moisture lower threshold :"+String(m_lower_threshold)),0,0,2);
+        lcd.clear();  
+        print_text(("Lower Level:"+String(m_lower_threshold)),0,0,2);
 
         int pressed=wait_for_button_press();
 
@@ -491,16 +475,19 @@ void set_moisture(){
         update_time();
         }
 
-        display.clearDisplay();
-        print_text(F("Moisture thresholds are set"),0,0,1);
+        lcd.clear();  
+        print_text(F("Moisture Levels"),0,0,1);
+        lcd.setCursor(0, 1);
+        lcd.print("are set");
+
         delay(1500);
 
   }
 void set_temp(){
     int upper_threshold=temperature[0];
     while(true){
-      display.clearDisplay();
-      print_text(("Enter temp Upper threshold :"+String(upper_threshold)),0,0,1);
+      lcd.clear();  
+      print_text(("Upper Level: "+String(upper_threshold)),0,0,1);
 
       int pressed=wait_for_button_press();
 
@@ -533,8 +520,8 @@ void set_temp(){
 
       int lower_threshold=temperature[1];
       while(true){
-        display.clearDisplay();
-        print_text(("Enter temp lower threshold :"+String(lower_threshold)),0,0,1);
+        lcd.clear();  
+        print_text(("Lower Level: "+String(lower_threshold)),0,0,1);
 
         int pressed=wait_for_button_press();
 
@@ -565,16 +552,18 @@ void set_temp(){
         update_time();          
         }
 
-        display.clearDisplay();
-        print_text(F("Temperature thresholds are set"),0,0,1);
+        lcd.clear();  
+        print_text(F("Temp Levels are"),0,0,1);
+        lcd.setCursor(0, 1);
+        lcd.print("set");
         delay(1500);
 
   }
 void set_humidity(){
     int h_upper_threshold=humidity[0];
     while(true){
-      display.clearDisplay();
-      print_text(("Enter Humidity Upper threshold :"+String(h_upper_threshold)),0,0,1);
+      lcd.clear();  
+      print_text(("Upper Level: "+String(h_upper_threshold)),0,0,1);
 
       int pressed=wait_for_button_press();
 
@@ -607,8 +596,8 @@ void set_humidity(){
 
       int h_lower_threshold=temperature[1];
       while(true){
-        display.clearDisplay();
-        print_text(("Enter Humidity lower threshold :"+String(h_lower_threshold)),0,0,1);
+        lcd.clear();  
+        print_text(("Lower Level: "+String(h_lower_threshold)),0,0,1);
 
         int pressed=wait_for_button_press();
 
@@ -639,43 +628,45 @@ void set_humidity(){
           update_time();          
         }
 
-        display.clearDisplay();
-        print_text(F("Humidity thresholds are set"),0,0,1);
+        lcd.clear();  
+        print_text(F("Humidity Levels"),0,0,1);
+        lcd.setCursor(0,1);   
+        lcd.print("are set");
         delay(1500);
 
   }  
-int readMoistureSensor() {
-	digitalWrite(moisturesensorPower, HIGH);	// Turn the sensor ON
-	delay(10);							// Allow power to settle
-	int val = analogRead(moisturesensor);	// Read the analog value form sensor
-	digitalWrite(moisturesensorPower, LOW);		// Turn the sensor OFF
-	return val;							// Return analog moisture value
-}
+// int readMoistureSensor() {
+// 	digitalWrite(moisturesensorPower, HIGH);	// Turn the sensor ON
+// 	delay(10);							// Allow power to settle
+// 	int val = analogRead(moisturesensor);	// Read the analog value form sensor
+// 	digitalWrite(moisturesensorPower, LOW);		// Turn the sensor OFF
+// 	return val;							// Return analog moisture value
+// }
 
 // void check_sensors(){
 //   TempAndHumidity data= dhtsensor.getTempAndHumidity();
 //   if(data.temperature>temperature[0]){
-//     display.clearDisplay();
+//     lcd.clear();  
 //     print_text("Temp Level High",0,40,1);
 //   }
 //   else if(data.temperature<temperature[1]){
-//     display.clearDisplay();
+//     lcd.clear();  
 //     print_text("Temp Level Low",0,40,1);
 //   }
 //   if(data.humidity>humidity[0]){
-//     display.clearDisplay();
+//     lcd.clear();  
 //     print_text("Humidity Level High",50,40,1);
 //   }
 //   else if(data.humidity<humidity[1]){
-//     display.clearDisplay();
+//     lcd.clear();  
 //     print_text("Humidity Level Low",50,40,1);
 //   }
 //   if(readMoistureSensor()>moisture[0]){
-//     display.clearDisplay();
+//     lcd.clear();  
 //     print_text("Moisture Level High",50,40,1);
 //   }
 //   else if(readMoistureSensor()<moisture[1]){
-//     display.clearDisplay();
+//     lcd.clear();  
 //     print_text("Moisture Level Low",50,40,1);
 //     ring_alarm();
 //   } 
