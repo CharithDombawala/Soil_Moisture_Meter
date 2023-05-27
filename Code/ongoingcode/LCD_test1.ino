@@ -7,11 +7,11 @@
 #define pb_ok 5//2 
 #define pb_down 2//5 
 #define pb_up 3//4 
-//#define DHTpin 9 //15
+#define DHTpin 9 //15
  
-//#define miosturesensordigital  //12
-//#define moisturesensorPower 7
-//#define moisturesensor A0 //23
+
+#define moisturesensorPower 6 //12
+#define moisturesensor A0 //23
 
 
 //DHTesp dhtsensor;
@@ -52,11 +52,12 @@ void setup() {
   pinMode(pb_ok, INPUT_PULLUP);
   pinMode(pb_down, INPUT_PULLUP);
   pinMode(pb_up, INPUT_PULLUP);
-  //pinMode(DHTpin, INPUT);
-  //pinMode(moisturesensorPower, OUTPUT);
-	//pinMode(moisturesensor, INPUT);
+  pinMode(DHTpin, INPUT);
+  pinMode(moisturesensorPower, OUTPUT);
+	pinMode(moisturesensor, INPUT);
+
 	// Initially keep the sensor OFF
-	//digitalWrite(moisturesensorPower, LOW);
+  digitalWrite(moisturesensorPower, LOW);
   
   //dhtsensor.setup(DHTpin,DHTesp::DHT22);
   lcd.init();
@@ -635,13 +636,13 @@ void set_humidity(){
         delay(1500);
 
   }  
-// int readMoistureSensor() {
-// 	digitalWrite(moisturesensorPower, HIGH);	// Turn the sensor ON
-// 	delay(10);							// Allow power to settle
-// 	int val = analogRead(moisturesensor);	// Read the analog value form sensor
-// 	digitalWrite(moisturesensorPower, LOW);		// Turn the sensor OFF
-// 	return val;							// Return analog moisture value
-// }
+int readMoistureSensor() {
+	digitalWrite(moisturesensorPower, HIGH);	// Turn the sensor ON
+	delay(10);							// Allow power to settle
+	int val = analogRead(moisturesensor);	// Read the analog value form sensor
+	digitalWrite(moisturesensorPower, LOW);		// Turn the sensor OFF
+	return val;							// Return analog moisture value
+}
 
 // void check_sensors(){
 //   TempAndHumidity data= dhtsensor.getTempAndHumidity();
