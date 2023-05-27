@@ -11,7 +11,7 @@ byte pb_up = 2 ;     //4
 byte DHTpin = 9 ;    //15
 
 
-byte moisturesensorPower = 6;  //12
+byte moisturesensorPower = 6;  //12   //3-nil  4-kaha  2-rathu 1 -kola
 byte moisturesensor= A0;      //23
 
 
@@ -27,7 +27,7 @@ byte seconds = 0;
 int timeNow = 0;
 int timeLast = 0;
 
-float moisture[] = { 900, 100 };
+float moisture[] = { 800, 300 };
 byte temperature[] = { 40, 15 };
 byte humidity[] = { 85, 60 };
 
