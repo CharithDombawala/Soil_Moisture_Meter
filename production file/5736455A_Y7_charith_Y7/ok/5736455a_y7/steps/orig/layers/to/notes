@@ -1,8 +1,0 @@
-1683097145,RS274X input,0.3337,1.01491,,,,,,Warning! Block contains D01 command only. See configuration parameter iol_274x_ignore_d01_alone .
-1683097145,RS274X input,2.51607,1.77954,,,,,,Warning! Interpreted zero-degree arc as 360 degree.
-1683097145,RS274X input,2.51607,1.77954,,,,,,Warning! Interpreted zero-degree arc as 360 degree.
-1683097145,RS274X input,0.96325,1.86658,,,,,,Warning! Interpreted zero-degree arc as 360 degree.
-1683097145,RS274X input,0.96324,1.86658,,,,,,Warning! Interpreted zero-degree arc as 360 degree.
-1683097145,RS274X input,1.11792,1.40576,,,,,,Warning! Interpreted zero-degree arc as 360 degree.
-1683097145,RS274X input,0.59992,1.07621,,,,,,Warning! Interpreted zero-degree arc as 360 degree.
-1683097145,RS274X input,0.26307,1.07991,,,,,,Warning! Interpreted zero-degree arc as 360 degree.
