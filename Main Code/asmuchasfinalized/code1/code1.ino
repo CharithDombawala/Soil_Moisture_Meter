@@ -6,8 +6,8 @@ byte BUZZER = 8;     //14        // sudu- button 2, kalu button 1,duburu- button
 byte LED_1 = 13 ;    //19
 byte pb_cancel = 4;  //3
 byte pb_ok = 5;      //2
-byte pb_down = 3;    //5
-byte pb_up = 2 ;     //4
+byte pb_down = 2;    //5
+byte pb_up = 3 ;     //4
 byte DHTpin = 9 ;    //15
 
 
@@ -76,7 +76,7 @@ void loop() {
   update_time_with_check_alarm();
 
 
-  if (digitalRead(pb_ok)==LOW){
+  if (digitalRead(pb_up)==LOW){
        delay(200);
        go_to_menu();
   }
@@ -290,13 +290,19 @@ while(true){
          lcd.setCursor(9,0); 
          lcd.print(String(reading/10)+"%"+" Dry"); 
          delay(1000);            
-  } else if (moisture[0]<=reading) {
+  } else if ((moisture[0]<=reading) && (reading<=1000)) {
          print_text("Over Dry ("+String(reading)+")",0,1);
          lcd.setCursor(9,0); 
          lcd.print(String(reading/10)+"%"+" Dry"); 
          BlinkLED();
          delay(1000);  
-  }  
+  } else if (reading>1000) {         
+         print_text("Over Dry ("+String(reading)+")",0,1);
+         lcd.setCursor(8,0); 
+         lcd.print("100% Dry"); 
+         BlinkLED();
+         delay(1000);   
+   }
   
   if ((digitalRead(pb_up)==LOW) || (digitalRead(pb_cancel)==LOW)){
        delay(200);
@@ -726,7 +732,7 @@ void set_humidity() {
 }
 int readMoistureSensor() {
   digitalWrite(moisturesensorPower, HIGH);  // Turn the sensor ON
-  delay(10);                                // Allow power to settle
+  delay(100);                                // Allow power to settle
   int val = analogRead(moisturesensor);     // Read the analog value form sensor
   digitalWrite(moisturesensorPower, LOW);   // Turn the sensor OFF
   return val;                               // Return analog moisture value
