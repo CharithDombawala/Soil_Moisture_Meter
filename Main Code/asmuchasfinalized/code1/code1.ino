@@ -11,7 +11,7 @@ byte pb_up = 3 ;     //4
 byte DHTpin = 9 ;    //15
 
 
-byte moisturesensorPower = 6;  //12   //3-nil  4-kaha  2-rathu 1 -kola
+byte moisturesensorPower = 6;  //12   //3-nil-moisture  4-kaha-temp  2-rathu-vcc 1 -kola-gnd
 byte moisturesensor= A0;      //23
 
 
