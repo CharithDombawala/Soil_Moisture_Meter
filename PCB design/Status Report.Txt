@@ -1,0 +1,12 @@
+Output: NC Drill Files
+Type  : NC Drill
+From  : Project [Free Documents]
+   Generated File[PCB_EDR Project.TXT]
+   Generated File[PCB_EDR Project.LDP]
+   Generated File[PCB_EDR Project.DRR]
+
+
+Files Generated   : 3
+Documents Printed : 0
+
+Finished Output Generation At 3:28:32 PM On 7/24/2023
